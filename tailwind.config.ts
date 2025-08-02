@@ -18,7 +18,23 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'poppins': ['Poppins', 'sans-serif'],
+				'dm-sans': ['DM Sans', 'sans-serif'],
+				'inter': ['Inter', 'sans-serif'],
+			},
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-accent': 'var(--gradient-accent)',
+				'gradient-subtle': 'var(--gradient-subtle)',
+			},
 			colors: {
+				'brand': {
+					pink: 'hsl(var(--brand-pink))',
+					lavender: 'hsl(var(--brand-lavender))',
+					blue: 'hsl(var(--brand-blue))',
+					lime: 'hsl(var(--brand-lime))',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

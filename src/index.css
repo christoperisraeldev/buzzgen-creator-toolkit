@@ -1,15 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* BUZZGEN Design System - All colors MUST be HSL */
 
 @layer base {
   :root {
+    /* Core Brand Colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    
+    /* BUZZGEN Brand Colors */
+    --brand-pink: 330 100% 90%;
+    --brand-lavender: 280 60% 85%;
+    --brand-blue: 235 100% 70%;
+    --brand-lime: 75 100% 70%;
+    
+    /* Gradient Backgrounds */
+    --gradient-hero: linear-gradient(135deg, hsl(330 100% 90%), hsl(280 60% 85%));
+    --gradient-accent: linear-gradient(90deg, hsl(235 100% 70%), hsl(75 100% 70%));
+    --gradient-subtle: linear-gradient(180deg, hsl(330 100% 95%), hsl(280 30% 98%));
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
