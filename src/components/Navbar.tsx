@@ -8,10 +8,11 @@ const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { name: "Creators", href: "/dashboard" },
-    { name: "Brands", href: "/shop" },
-    { name: "About", href: "#about" },
-    { name: "Blog", href: "#blog" },
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "AI Toolkit", href: "/toolkit" },
+    { name: "Planner", href: "/planner" },
+    { name: "Media Kit", href: "/media-kit" },
+    { name: "Shop", href: "/shop" },
   ];
 
   return (

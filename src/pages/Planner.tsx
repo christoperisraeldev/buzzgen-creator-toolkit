@@ -5,11 +5,21 @@ import { Plus, Calendar, Instagram, Youtube, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const Planner = () => {
-  const mockPosts = [
+  const userType = localStorage.getItem('userType') || 'creator';
+  
+  const creatorPosts = [
     { id: 1, content: "Morning workout routine", platform: "Instagram", time: "08:00", status: "scheduled" },
     { id: 2, content: "OOTD - Spring vibes", platform: "TikTok", time: "12:00", status: "scheduled" },
     { id: 3, content: "YouTube: Day in my life", platform: "YouTube", time: "18:00", status: "draft" },
   ];
+
+  const brandPosts = [
+    { id: 1, content: "Product launch announcement", platform: "Instagram", time: "09:00", status: "scheduled" },
+    { id: 2, content: "Behind the scenes video", platform: "TikTok", time: "14:00", status: "scheduled" },
+    { id: 3, content: "Brand campaign video", platform: "YouTube", time: "17:00", status: "draft" },
+  ];
+
+  const mockPosts = userType === 'creator' ? creatorPosts : brandPosts;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -18,8 +28,15 @@ const Planner = () => {
       <div className="max-w-6xl mx-auto p-6">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Content Planner</h1>
-            <p className="text-gray-600">Schedule and manage your content across platforms</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {userType === 'creator' ? 'Content Planner' : 'Campaign Planner'}
+            </h1>
+            <p className="text-gray-600">
+              {userType === 'creator' 
+                ? 'Schedule and manage your content across platforms' 
+                : 'Plan and schedule your brand campaigns and content'
+              }
+            </p>
           </div>
           <Button className="bg-brand-blue hover:bg-brand-blue/90">
             <Plus className="w-4 h-4 mr-2" />

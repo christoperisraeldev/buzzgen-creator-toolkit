@@ -6,12 +6,24 @@ import { Plus, ExternalLink, BarChart3, QrCode, MessageSquare, Coffee } from "lu
 import Navbar from "@/components/Navbar";
 
 const Dashboard = () => {
-  const mockLinks = [
+  const userType = localStorage.getItem('userType') || 'creator';
+  const selectedNiche = localStorage.getItem('selectedNiche') || 'Content Creator';
+  
+  const creatorLinks = [
     { name: "My Instagram", url: "instagram.com/ava.justin", clicks: 1247 },
     { name: "YouTube Channel", url: "youtube.com/avajustin", clicks: 890 },
     { name: "Shop My Looks", url: "shop.buzzgen.ai/ava", clicks: 567 },
     { name: "Book a Call", url: "cal.com/avajustin", clicks: 234 },
   ];
+
+  const brandLinks = [
+    { name: "Brand Website", url: "mybrand.com", clicks: 2340 },
+    { name: "Product Catalog", url: "shop.mybrand.com", clicks: 1890 },
+    { name: "Partnership Form", url: "partner.mybrand.com", clicks: 856 },
+    { name: "Contact Us", url: "contact.mybrand.com", clicks: 423 },
+  ];
+
+  const mockLinks = userType === 'creator' ? creatorLinks : brandLinks;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -19,8 +31,15 @@ const Dashboard = () => {
       
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Ava!</h1>
-          <p className="text-gray-600">Manage your links and grow your brand</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome back, {userType === 'creator' ? 'Creator' : 'Brand Manager'}!
+          </h1>
+          <p className="text-gray-600">
+            {userType === 'creator' 
+              ? `Manage your ${selectedNiche} content and grow your personal brand` 
+              : 'Connect with creators and manage your brand partnerships'
+            }
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -28,7 +47,9 @@ const Dashboard = () => {
           <div className="lg:col-span-2">
             <Card className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold">Your Links</h2>
+                <h2 className="text-xl font-semibold">
+                  {userType === 'creator' ? 'Your Creator Links' : 'Your Brand Links'}
+                </h2>
                 <Button className="bg-brand-blue hover:bg-brand-blue/90">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Link
@@ -63,17 +84,23 @@ const Dashboard = () => {
                     AI Toolkit
                   </Link>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <QrCode className="w-6 h-6 mb-2" />
-                  QR Code
+                <Button variant="outline" className="h-20 flex-col" asChild>
+                  <Link to="/planner">
+                    <QrCode className="w-6 h-6 mb-2" />
+                    {userType === 'creator' ? 'Content Planner' : 'Campaign Planner'}
+                  </Link>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <MessageSquare className="w-6 h-6 mb-2" />
-                  Contact Form
+                <Button variant="outline" className="h-20 flex-col" asChild>
+                  <Link to="/media-kit">
+                    <MessageSquare className="w-6 h-6 mb-2" />
+                    {userType === 'creator' ? 'Media Kit' : 'Brand Kit'}
+                  </Link>
                 </Button>
-                <Button variant="outline" className="h-20 flex-col">
-                  <Coffee className="w-6 h-6 mb-2" />
-                  Tip Jar
+                <Button variant="outline" className="h-20 flex-col" asChild>
+                  <Link to="/shop">
+                    <Coffee className="w-6 h-6 mb-2" />
+                    {userType === 'creator' ? 'Creator Shop' : 'Brand Shop'}
+                  </Link>
                 </Button>
               </div>
             </Card>

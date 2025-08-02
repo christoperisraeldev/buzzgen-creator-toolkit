@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Star, ArrowRight, Smartphone, BarChart3, Zap, Users, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import phoneMockup from "@/assets/phone-mockup.png";
 
 const Index = () => {
   return (
@@ -40,44 +41,13 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Creator Profile Demo */}
-            <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm mx-auto">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-accent rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold">AJ</span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Ava Justin</h3>
-                    <p className="text-sm text-gray-600">@ava.justin</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center">
-                    <div className="w-8 h-8 bg-pink-500 rounded-lg mr-3 flex items-center justify-center">
-                      📸
-                    </div>
-                    <span className="text-sm font-medium">My Instagram</span>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center">
-                    <div className="w-8 h-8 bg-red-500 rounded-lg mr-3 flex items-center justify-center">
-                      🎥
-                    </div>
-                    <span className="text-sm font-medium">YouTube Channel</span>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-3 flex items-center">
-                    <div className="w-8 h-8 bg-green-500 rounded-lg mr-3 flex items-center justify-center">
-                      🛍️
-                    </div>
-                    <span className="text-sm font-medium">Shop My Looks</span>
-                  </div>
-                </div>
-                
-                <div className="mt-4 pt-4 border-t text-center">
-                  <p className="text-xs text-gray-500">buzzgen.ai/ava.justin</p>
-                </div>
-              </div>
+            {/* Phone Mockup */}
+            <div className="relative flex justify-center">
+              <img 
+                src={phoneMockup} 
+                alt="BUZZGEN Creator Profile on Phone" 
+                className="max-w-sm w-full h-auto drop-shadow-2xl"
+              />
               
               {/* Floating Chat Bubbles */}
               <div className="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-lg">

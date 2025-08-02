@@ -7,6 +7,7 @@ import { ArrowRight, Camera, Music, Dumbbell, Utensils, Gamepad2, Palette, BookO
 
 const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [userType, setUserType] = useState<string>("");
   const [selectedNiche, setSelectedNiche] = useState<string>("");
   const [selectedSocials, setSelectedSocials] = useState<string[]>([]);
 
@@ -18,15 +19,25 @@ const Onboarding = () => {
     { name: "Gaming", icon: Gamepad2 },
     { name: "Art", icon: Palette },
     { name: "Education", icon: BookOpen },
+    { name: "Technology", icon: BookOpen },
+    { name: "Travel", icon: Camera },
+    { name: "Beauty", icon: Palette },
+    { name: "Business", icon: BookOpen },
+    { name: "Health", icon: Dumbbell },
+    { name: "Photography", icon: Camera },
+    { name: "Comedy", icon: Music },
   ];
 
   const socials = ["Instagram", "TikTok", "YouTube", "Twitter", "LinkedIn", "Twitch"];
 
   const handleNext = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Navigate to dashboard
+      // Save user data to localStorage and navigate to dashboard
+      localStorage.setItem('userType', userType);
+      localStorage.setItem('selectedNiche', selectedNiche);
+      localStorage.setItem('selectedSocials', JSON.stringify(selectedSocials));
       window.location.href = "/dashboard";
     }
   };
@@ -39,7 +50,7 @@ const Onboarding = () => {
           <p className="text-gray-600">This will help us personalize your experience</p>
           <div className="flex justify-center mt-4">
             <div className="flex space-x-2">
-              {[1, 2, 3].map((step) => (
+              {[1, 2, 3, 4].map((step) => (
                 <div
                   key={step}
                   className={`w-3 h-3 rounded-full ${
@@ -53,6 +64,42 @@ const Onboarding = () => {
 
         <Card className="p-8">
           {currentStep === 1 && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-center">Are you a creator or a brand?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button
+                  onClick={() => setUserType("creator")}
+                  className={`p-6 rounded-lg border-2 transition-all text-center ${
+                    userType === "creator"
+                      ? "border-brand-blue bg-brand-blue/10"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="w-16 h-16 bg-brand-blue/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Camera className="w-8 h-8 text-brand-blue" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Creator</h3>
+                  <p className="text-sm text-gray-600">I create content and want to grow my personal brand</p>
+                </button>
+                <button
+                  onClick={() => setUserType("brand")}
+                  className={`p-6 rounded-lg border-2 transition-all text-center ${
+                    userType === "brand"
+                      ? "border-brand-blue bg-brand-blue/10"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="w-16 h-16 bg-brand-lime/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <Gamepad2 className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">Brand</h3>
+                  <p className="text-sm text-gray-600">I represent a company and want to connect with creators</p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">What's your niche?</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -77,7 +124,7 @@ const Onboarding = () => {
             </div>
           )}
 
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-semibold text-center">Connect your socials</h2>
               <div className="space-y-3">
@@ -86,7 +133,22 @@ const Onboarding = () => {
                     key={social}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                   >
-                    <span className="font-medium">{social}</span>
+                    <div className="flex-1">
+                      <span className="font-medium">{social}</span>
+                      {selectedSocials.includes(social) && (
+                        <div className="mt-1">
+                          <p className="text-xs text-gray-500">Your link:</p>
+                          <div className="flex items-center space-x-2 mt-1">
+                            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                              buzzgen.ai/yourname
+                            </code>
+                            <Button variant="ghost" size="sm" className="text-xs">
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <Button
                       variant={selectedSocials.includes(social) ? "default" : "outline"}
                       size="sm"
@@ -106,20 +168,23 @@ const Onboarding = () => {
             </div>
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <div className="space-y-6 text-center">
               <h2 className="text-2xl font-semibold">You're all set!</h2>
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-medium mb-2">Your Profile</h3>
-                  <Badge className="mr-2">{selectedNiche}</Badge>
+                  <Badge className="mr-2 mb-2">{userType}</Badge>
+                  <Badge className="mr-2 mb-2">{selectedNiche}</Badge>
                   {selectedSocials.map((social) => (
-                    <Badge key={social} variant="outline" className="mr-2">
+                    <Badge key={social} variant="outline" className="mr-2 mb-2">
                       {social}
                     </Badge>
                   ))}
                 </div>
-                <p className="text-gray-600">Ready to start building your creator toolkit?</p>
+                <p className="text-gray-600">
+                  Ready to start building your {userType === "creator" ? "creator" : "brand"} toolkit?
+                </p>
               </div>
             </div>
           )}
@@ -131,8 +196,12 @@ const Onboarding = () => {
             <Button
               onClick={handleNext}
               className="bg-brand-blue hover:bg-brand-blue/90"
+              disabled={
+                (currentStep === 1 && !userType) ||
+                (currentStep === 2 && !selectedNiche)
+              }
             >
-              {currentStep === 3 ? "Go to Dashboard" : "Next"}
+              {currentStep === 4 ? "Go to Dashboard" : "Next"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

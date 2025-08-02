@@ -8,6 +8,7 @@ import { Wand2, Lightbulb, Hash, Copy } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const Toolkit = () => {
+  const userType = localStorage.getItem('userType') || 'creator';
   const [activeTab, setActiveTab] = useState("captions");
   const [inputText, setInputText] = useState("");
   const [generatedContent, setGeneratedContent] = useState("");
@@ -49,8 +50,15 @@ const Toolkit = () => {
       
       <div className="max-w-4xl mx-auto p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Toolkit</h1>
-          <p className="text-gray-600">Let AI help you create amazing content</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {userType === 'creator' ? 'Creator AI Toolkit' : 'Brand AI Toolkit'}
+          </h1>
+          <p className="text-gray-600">
+            {userType === 'creator' 
+              ? 'Let AI help you create amazing content for your audience' 
+              : 'AI-powered tools to create compelling brand content and campaigns'
+            }
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

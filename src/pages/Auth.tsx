@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
-import { Mail, Phone, Apple, Chrome } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
+import { FaGoogle, FaApple } from "react-icons/fa";
 
 const Auth = () => {
   return (
@@ -22,14 +23,14 @@ const Auth = () => {
         <Card className="p-6 space-y-4">
           <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
             <Link to="/onboarding">
-              <Chrome className="w-5 h-5" />
+              <FaGoogle className="w-5 h-5" />
               <span>Continue with Google</span>
             </Link>
           </Button>
 
           <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
             <Link to="/onboarding">
-              <Apple className="w-5 h-5" />
+              <FaApple className="w-5 h-5" />
               <span>Continue with Apple</span>
             </Link>
           </Button>
