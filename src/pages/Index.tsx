@@ -2,15 +2,26 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { Star, ArrowRight, Smartphone, BarChart3, Zap, Users, Play } from "lucide-react";
+import { Star, ArrowRight, Smartphone, BarChart3, Zap, Play } from "lucide-react";
 import LandingNavbar from "@/components/LandingNavbar";
 import phoneMockup from "@/assets/phone-mockup.png";
+
+const images = [
+  "/images/WhatsApp Image 2025-07-29 at 3.35.34 AM (1).jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.34 AM (2).jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.34 AM.jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.35 AM (1).jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.35 AM (2).jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.35 AM (3).jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.35 AM.jpeg",
+  "/images/WhatsApp Image 2025-07-29 at 3.35.36 AM.jpeg",
+];
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <LandingNavbar />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-hero py-20 px-4">
         <div className="max-w-7xl mx-auto">
@@ -46,7 +57,7 @@ const Index = () => {
               <img 
                 src={phoneMockup} 
                 alt="BUZZGEN Creator Profile on Phone" 
-                className="max-w-sm w-full h-auto drop-shadow-2xl"
+                className="w-40 h-auto drop-shadow-2xl"
               />
               
               {/* Floating Chat Bubbles */}
@@ -119,11 +130,17 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="aspect-square bg-gradient-accent rounded-lg flex items-center justify-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
+            {images.map((src, index) => (
+              <div
+                key={index}
+                className="aspect-square rounded-lg overflow-hidden flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500"
+              >
+                <img
+                  src={src}
+                  alt={`Creator ${index + 1}`}
+                  className="object-cover w-full h-full"
+                  loading="lazy"
+                />
               </div>
             ))}
           </div>
@@ -243,7 +260,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 BUZZGEN. All rights reserved.</p>
+            <p>&copy; 2025 BUZZGEN. All rights reserved.</p>
           </div>
         </div>
       </footer>
