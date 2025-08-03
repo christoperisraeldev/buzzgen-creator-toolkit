@@ -3,19 +3,19 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Star, ArrowRight, Smartphone, BarChart3, Zap, Users, Play } from "lucide-react";
-import Navbar from "@/components/Navbar";
+import LandingNavbar from "@/components/LandingNavbar";
 import phoneMockup from "@/assets/phone-mockup.png";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-white">
-      <Navbar />
+      <LandingNavbar />
       
       {/* Hero Section */}
       <section className="bg-gradient-hero py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="text-center lg:text-left">
               <Badge className="mb-6 bg-white/20 text-gray-800 border-white/30">
                 ✨ AI-Powered Creator Tools
               </Badge>
