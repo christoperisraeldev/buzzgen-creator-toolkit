@@ -9,7 +9,7 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [userType, setUserType] = useState<string>("");
   const [selectedNiche, setSelectedNiche] = useState<string>("");
-  const [selectedSocials, setSelectedSocials] = useState<string[]>([]);
+  const [selectedSocials, setSelectedSocials] = useState<{[key: string]: string}>({});
 
   const niches = [
     { name: "Fashion", icon: Camera },
@@ -38,7 +38,9 @@ const Onboarding = () => {
       localStorage.setItem('userType', userType);
       localStorage.setItem('selectedNiche', selectedNiche);
       localStorage.setItem('selectedSocials', JSON.stringify(selectedSocials));
-      window.location.href = "/dashboard";
+      // Use navigate instead of window.location.href for proper SPA navigation
+      window.history.pushState({}, '', '/dashboard');
+      window.location.reload();
     }
   };
 
@@ -126,42 +128,28 @@ const Onboarding = () => {
 
           {currentStep === 3 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-center">Connect your socials</h2>
+              <h2 className="text-2xl font-semibold text-center">Add your social media links</h2>
               <div className="space-y-3">
                 {socials.map((social) => (
                   <div
                     key={social}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
+                    className="p-4 border rounded-lg"
                   >
-                    <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-3">
                       <span className="font-medium">{social}</span>
-                      {selectedSocials.includes(social) && (
-                        <div className="mt-1">
-                          <p className="text-xs text-gray-500">Your link:</p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <code className="text-xs bg-gray-100 px-2 py-1 rounded">
-                              buzzgen.ai/yourname
-                            </code>
-                            <Button variant="ghost" size="sm" className="text-xs">
-                              Copy
-                            </Button>
-                          </div>
-                        </div>
-                      )}
                     </div>
-                    <Button
-                      variant={selectedSocials.includes(social) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => {
-                        if (selectedSocials.includes(social)) {
-                          setSelectedSocials(selectedSocials.filter(s => s !== social));
-                        } else {
-                          setSelectedSocials([...selectedSocials, social]);
-                        }
+                    <input
+                      type="url"
+                      placeholder={`Enter your ${social} profile URL`}
+                      value={selectedSocials[social] || ''}
+                      onChange={(e) => {
+                        setSelectedSocials({
+                          ...selectedSocials,
+                          [social]: e.target.value
+                        });
                       }}
-                    >
-                      {selectedSocials.includes(social) ? "Connected" : "Connect"}
-                    </Button>
+                      className="w-full p-2 border rounded-md text-sm"
+                    />
                   </div>
                 ))}
               </div>
@@ -172,16 +160,16 @@ const Onboarding = () => {
             <div className="space-y-6 text-center">
               <h2 className="text-2xl font-semibold">You're all set!</h2>
               <div className="space-y-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">Your Profile</h3>
-                  <Badge className="mr-2 mb-2">{userType}</Badge>
-                  <Badge className="mr-2 mb-2">{selectedNiche}</Badge>
-                  {selectedSocials.map((social) => (
-                    <Badge key={social} variant="outline" className="mr-2 mb-2">
-                      {social}
-                    </Badge>
-                  ))}
-                </div>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-medium mb-2">Your Profile</h3>
+                    <Badge className="mr-2 mb-2">{userType}</Badge>
+                    <Badge className="mr-2 mb-2">{selectedNiche}</Badge>
+                    {Object.keys(selectedSocials).filter(social => selectedSocials[social]).map((social) => (
+                      <Badge key={social} variant="outline" className="mr-2 mb-2">
+                        {social}
+                      </Badge>
+                    ))}
+                  </div>
                 <p className="text-gray-600">
                   Ready to start building your {userType === "creator" ? "creator" : "brand"} toolkit?
                 </p>

@@ -39,15 +39,6 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/auth"
-              className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-            >
-              Log In
-            </Link>
-            <Button asChild variant="default" className="bg-brand-blue hover:bg-brand-blue/90">
-              <Link to="/auth">Get Started</Link>
-            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -75,16 +66,6 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                to="/auth"
-                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900"
-                onClick={() => setIsOpen(false)}
-              >
-                Log In
-              </Link>
-              <Button asChild variant="default" className="w-full mt-2 bg-brand-blue hover:bg-brand-blue/90">
-                <Link to="/auth" onClick={() => setIsOpen(false)}>Get Started</Link>
-              </Button>
             </div>
           </div>
         )}
