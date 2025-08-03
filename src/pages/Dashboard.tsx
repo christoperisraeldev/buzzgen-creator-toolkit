@@ -1,29 +1,51 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Link } from "react-router-dom";
 import { Plus, ExternalLink, BarChart3, QrCode, MessageSquare, Coffee } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import LinkManager from "@/components/LinkManager";
+import AccountManager from "@/components/AccountManager";
 
 const Dashboard = () => {
   const userType = localStorage.getItem('userType') || 'creator';
   const selectedNiche = localStorage.getItem('selectedNiche') || 'Content Creator';
   
-  const creatorLinks = [
-    { name: "My Instagram", url: "instagram.com/ava.justin", clicks: 1247 },
-    { name: "YouTube Channel", url: "youtube.com/avajustin", clicks: 890 },
-    { name: "Shop My Looks", url: "shop.buzzgen.ai/ava", clicks: 567 },
-    { name: "Book a Call", url: "cal.com/avajustin", clicks: 234 },
-  ];
+  // Initialize links from localStorage or use default
+  const getInitialLinks = () => {
+    const stored = localStorage.getItem('userLinks');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    
+    // Default links based on user type
+    if (userType === 'creator') {
+      return [
+        { id: "1", title: "My Instagram", url: "https://instagram.com/ava.justin", clicks: 1247 },
+        { id: "2", title: "YouTube Channel", url: "https://youtube.com/avajustin", clicks: 890 },
+        { id: "3", title: "Shop My Looks", url: "https://shop.buzzgen.ai/ava", clicks: 567 },
+        { id: "4", title: "Book a Call", url: "https://cal.com/avajustin", clicks: 234 },
+      ];
+    } else {
+      return [
+        { id: "1", title: "Brand Website", url: "https://mybrand.com", clicks: 2340 },
+        { id: "2", title: "Product Catalog", url: "https://shop.mybrand.com", clicks: 1890 },
+        { id: "3", title: "Partnership Form", url: "https://partner.mybrand.com", clicks: 856 },
+        { id: "4", title: "Contact Us", url: "https://contact.mybrand.com", clicks: 423 },
+      ];
+    }
+  };
 
-  const brandLinks = [
-    { name: "Brand Website", url: "mybrand.com", clicks: 2340 },
-    { name: "Product Catalog", url: "shop.mybrand.com", clicks: 1890 },
-    { name: "Partnership Form", url: "partner.mybrand.com", clicks: 856 },
-    { name: "Contact Us", url: "contact.mybrand.com", clicks: 423 },
-  ];
+  const [userLinks, setUserLinks] = useState(getInitialLinks);
 
-  const mockLinks = userType === 'creator' ? creatorLinks : brandLinks;
+  useEffect(() => {
+    localStorage.setItem('userLinks', JSON.stringify(userLinks));
+  }, [userLinks]);
+
+  const handleLinksChange = (newLinks: any[]) => {
+    setUserLinks(newLinks);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,28 +72,8 @@ const Dashboard = () => {
                 <h2 className="text-xl font-semibold">
                   {userType === 'creator' ? 'Your Creator Links' : 'Your Brand Links'}
                 </h2>
-                <Button className="bg-brand-blue hover:bg-brand-blue/90">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Link
-                </Button>
               </div>
-              
-              <div className="space-y-4">
-                {mockLinks.map((link, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-medium">{link.name}</h3>
-                      <p className="text-sm text-gray-500">{link.url}</p>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <span className="text-sm text-gray-500">{link.clicks} clicks</span>
-                      <Button variant="ghost" size="sm">
-                        <ExternalLink className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <LinkManager links={userLinks} onLinksChange={handleLinksChange} />
             </Card>
 
             {/* Quick Tools */}
@@ -114,10 +116,19 @@ const Dashboard = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm text-gray-600">Total Clicks</span>
-                    <span className="font-semibold">5.6k</span>
+                    <span className="font-semibold">{userLinks.reduce((sum, link) => sum + link.clicks, 0).toLocaleString()}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div className="bg-brand-blue h-2 rounded-full" style={{width: '75%'}}></div>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-600">Active Links</span>
+                    <span className="font-semibold">{userLinks.length}</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-brand-lime h-2 rounded-full" style={{width: `${Math.min((userLinks.length / 10) * 100, 100)}%`}}></div>
                   </div>
                 </div>
                 <div>
@@ -126,7 +137,7 @@ const Dashboard = () => {
                     <span className="font-semibold">70%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-brand-lime h-2 rounded-full" style={{width: '70%'}}></div>
+                    <div className="bg-brand-blue h-2 rounded-full" style={{width: '70%'}}></div>
                   </div>
                 </div>
               </div>
@@ -152,6 +163,9 @@ const Dashboard = () => {
                 Customize Theme
               </Button>
             </Card>
+
+            {/* Account Management */}
+            <AccountManager />
           </div>
         </div>
       </div>

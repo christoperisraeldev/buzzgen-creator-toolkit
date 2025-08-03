@@ -1,25 +1,75 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Calendar, Instagram, Youtube, Clock } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Plus, Calendar as CalendarIcon, Instagram, Youtube, Clock, Eye } from "lucide-react";
+import { format, isSameDay } from "date-fns";
 import Navbar from "@/components/Navbar";
+import ScheduledPostManager from "@/components/ScheduledPostManager";
 
 const Planner = () => {
   const userType = localStorage.getItem('userType') || 'creator';
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
   
-  const creatorPosts = [
-    { id: 1, content: "Morning workout routine", platform: "Instagram", time: "08:00", status: "scheduled" },
-    { id: 2, content: "OOTD - Spring vibes", platform: "TikTok", time: "12:00", status: "scheduled" },
-    { id: 3, content: "YouTube: Day in my life", platform: "YouTube", time: "18:00", status: "draft" },
-  ];
+  // Initialize scheduled posts from localStorage
+  const getInitialPosts = () => {
+    const stored = localStorage.getItem('scheduledPosts');
+    if (stored) {
+      return JSON.parse(stored).map((post: any) => ({
+        ...post,
+        date: new Date(post.date)
+      }));
+    }
+    
+    // Default posts
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    if (userType === 'creator') {
+      return [
+        { id: "1", content: "Morning workout routine", platform: "Instagram", date: today, time: "08:00", status: "scheduled" },
+        { id: "2", content: "OOTD - Spring vibes", platform: "TikTok", date: tomorrow, time: "12:00", status: "scheduled" },
+        { id: "3", content: "YouTube: Day in my life", platform: "YouTube", date: tomorrow, time: "18:00", status: "draft" },
+      ];
+    } else {
+      return [
+        { id: "1", content: "Product launch announcement", platform: "Instagram", date: today, time: "09:00", status: "scheduled" },
+        { id: "2", content: "Behind the scenes video", platform: "TikTok", date: tomorrow, time: "14:00", status: "scheduled" },
+        { id: "3", content: "Brand campaign video", platform: "YouTube", date: tomorrow, time: "17:00", status: "draft" },
+      ];
+    }
+  };
 
-  const brandPosts = [
-    { id: 1, content: "Product launch announcement", platform: "Instagram", time: "09:00", status: "scheduled" },
-    { id: 2, content: "Behind the scenes video", platform: "TikTok", time: "14:00", status: "scheduled" },
-    { id: 3, content: "Brand campaign video", platform: "YouTube", time: "17:00", status: "draft" },
-  ];
+  const [scheduledPosts, setScheduledPosts] = useState(getInitialPosts);
 
-  const mockPosts = userType === 'creator' ? creatorPosts : brandPosts;
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Save posts to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('scheduledPosts', JSON.stringify(scheduledPosts));
+  }, [scheduledPosts]);
+
+  const handlePostsChange = (newPosts: any[]) => {
+    setScheduledPosts(newPosts);
+  };
+
+  const getPostsForDate = (date: Date) => {
+    return scheduledPosts.filter(post => isSameDay(post.date, date));
+  };
+
+  const getTodaysPosts = () => {
+    return getPostsForDate(new Date());
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -37,71 +87,104 @@ const Planner = () => {
                 : 'Plan and schedule your brand campaigns and content'
               }
             </p>
+            <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+              <span>{format(currentTime, "MMMM d, yyyy")}</span>
+              <span>{format(currentTime, "h:mm a")}</span>
+            </div>
           </div>
-          <Button className="bg-brand-blue hover:bg-brand-blue/90">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Scheduled Post
-          </Button>
+          <ScheduledPostManager posts={scheduledPosts} onPostsChange={handlePostsChange} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Calendar View */}
           <div className="lg:col-span-2">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">This Week</h2>
-              <div className="grid grid-cols-7 gap-2 mb-4">
-                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                  <div key={day} className="text-center p-2 font-medium text-gray-600">
-                    {day}
-                  </div>
-                ))}
-                {Array.from({length: 7}, (_, i) => (
-                  <div key={i} className="border border-gray-200 rounded h-32 p-2 hover:bg-gray-50">
-                    <span className="text-sm text-gray-500">{i + 1}</span>
-                    {i === 2 && (
-                      <div className="mt-1 space-y-1">
-                        <div className="bg-brand-blue/10 text-brand-blue text-xs p-1 rounded flex items-center">
-                          <Instagram className="w-3 h-3 mr-1" />
-                          8:00
+              <h2 className="text-xl font-semibold mb-4">Calendar</h2>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                className="rounded-md border w-full"
+                modifiers={{
+                  hasPost: (date) => getPostsForDate(date).length > 0
+                }}
+                modifiersStyles={{
+                  hasPost: { 
+                    backgroundColor: 'hsl(var(--brand-blue) / 0.1)',
+                    color: 'hsl(var(--brand-blue))',
+                    fontWeight: 'bold'
+                  }
+                }}
+              />
+              
+              {/* Posts for selected date */}
+              {selectedDate && getPostsForDate(selectedDate).length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-semibold mb-3">
+                    Posts for {format(selectedDate, "MMMM d, yyyy")}
+                  </h3>
+                  <div className="space-y-2">
+                    {getPostsForDate(selectedDate).map((post) => (
+                      <div key={post.id} className="p-3 border rounded-lg bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <Badge 
+                            variant={post.status === "scheduled" ? "default" : "secondary"}
+                            className="text-xs"
+                          >
+                            {post.status}
+                          </Badge>
+                          <div className="flex items-center text-xs text-gray-500">
+                            <Clock className="w-3 h-3 mr-1" />
+                            {post.time}
+                          </div>
                         </div>
-                        <div className="bg-brand-lime/10 text-green-700 text-xs p-1 rounded">
-                          TikTok 12:00
+                        <p className="text-sm font-medium mb-2">{post.content}</p>
+                        <div className="flex items-center">
+                          {post.platform === "Instagram" && <Instagram className="w-4 h-4 text-pink-500 mr-1" />}
+                          {post.platform === "YouTube" && <Youtube className="w-4 h-4 text-red-500 mr-1" />}
+                          <span className="text-xs text-gray-600">{post.platform}</span>
                         </div>
                       </div>
-                    )}
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </Card>
           </div>
 
-          {/* Scheduled Posts */}
+          {/* Today's Schedule & Actions */}
           <div>
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Today's Schedule</h2>
               <div className="space-y-4">
-                {mockPosts.map((post) => (
-                  <div key={post.id} className="p-3 border rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge 
-                        variant={post.status === "scheduled" ? "default" : "secondary"}
-                        className="text-xs"
-                      >
-                        {post.status}
-                      </Badge>
-                      <div className="flex items-center text-xs text-gray-500">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {post.time}
+                {getTodaysPosts().length > 0 ? (
+                  getTodaysPosts().map((post) => (
+                    <div key={post.id} className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge 
+                          variant={post.status === "scheduled" ? "default" : "secondary"}
+                          className="text-xs"
+                        >
+                          {post.status}
+                        </Badge>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {post.time}
+                        </div>
+                      </div>
+                      <p className="text-sm font-medium mb-2">{post.content}</p>
+                      <div className="flex items-center">
+                        {post.platform === "Instagram" && <Instagram className="w-4 h-4 text-pink-500 mr-1" />}
+                        {post.platform === "YouTube" && <Youtube className="w-4 h-4 text-red-500 mr-1" />}
+                        <span className="text-xs text-gray-600">{post.platform}</span>
                       </div>
                     </div>
-                    <p className="text-sm font-medium mb-2">{post.content}</p>
-                    <div className="flex items-center">
-                      {post.platform === "Instagram" && <Instagram className="w-4 h-4 text-pink-500 mr-1" />}
-                      {post.platform === "YouTube" && <Youtube className="w-4 h-4 text-red-500 mr-1" />}
-                      <span className="text-xs text-gray-600">{post.platform}</span>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No posts scheduled for today</p>
                   </div>
-                ))}
+                )}
               </div>
             </Card>
 
@@ -109,13 +192,40 @@ const Planner = () => {
               <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
               <div className="space-y-2">
                 <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  View Full Calendar
+                  <CalendarIcon className="w-4 h-4 mr-2" />
+                  View Analytics
                 </Button>
                 <Button variant="outline" className="w-full justify-start">
                   <Instagram className="w-4 h-4 mr-2" />
                   Instagram Insights
                 </Button>
+                <Button variant="outline" className="w-full justify-start">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Preview Content
+                </Button>
+              </div>
+            </Card>
+
+            {/* Weekly Stats */}
+            <Card className="p-6 mt-6">
+              <h2 className="text-lg font-semibold mb-4">This Week</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Total Posts</span>
+                  <span className="font-semibold">{scheduledPosts.length}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Scheduled</span>
+                  <span className="font-semibold text-green-600">
+                    {scheduledPosts.filter(p => p.status === 'scheduled').length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Drafts</span>
+                  <span className="font-semibold text-yellow-600">
+                    {scheduledPosts.filter(p => p.status === 'draft').length}
+                  </span>
+                </div>
               </div>
             </Card>
           </div>

@@ -16,6 +16,7 @@ const PhonePreview = ({ isOpen, onClose }: PhonePreviewProps) => {
   const selectedNiche = localStorage.getItem('selectedNiche') || 'Fashion';
   const selectedSocials = JSON.parse(localStorage.getItem('selectedSocials') || '{}');
   const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+  const userLinks = JSON.parse(localStorage.getItem('userLinks') || '[]');
   
   const name = profileData.name || 'Ava Justin';
   const bio = profileData.bio || 'Fashion & lifestyle creator passionate about sharing style tips';
@@ -60,19 +61,20 @@ const PhonePreview = ({ isOpen, onClose }: PhonePreviewProps) => {
                     </Button>
                   ))}
                   
-                  {/* Mock creator links */}
-                  <Button variant="outline" className="w-full justify-between">
-                    <span>Latest Blog Post</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" className="w-full justify-between">
-                    <span>Shop My Favorites</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" className="w-full justify-between">
-                    <span>Book a Collaboration</span>
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
+                  {/* User Links */}
+                  {userLinks.map((link: any) => (
+                    <Button
+                      key={link.id}
+                      variant="outline"
+                      className="w-full justify-between"
+                      asChild
+                    >
+                      <a href={link.url} target="_blank" rel="noopener noreferrer">
+                        <span>{link.title}</span>
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </Button>
+                  ))}
                 </div>
 
                 {/* Footer */}
