@@ -9,6 +9,7 @@ const Navbar = () => {
 
   const navItems = [
     { name: "Dashboard", href: "/dashboard" },
+    { name: "Bio Link", href: "/bio-link-manager" },
     { name: "AI Toolkit", href: "/toolkit" },
     { name: "Planner", href: "/planner" },
     { name: "Media Kit", href: "/media-kit" },

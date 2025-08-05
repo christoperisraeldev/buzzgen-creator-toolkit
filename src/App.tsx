@@ -13,6 +13,8 @@ import Bot from "./pages/Bot";
 import MediaKit from "./pages/MediaKit";
 import Referral from "./pages/Referral";
 import Shop from "./pages/Shop";
+import BioLink from "./pages/BioLink";
+import BioLinkManager from "./pages/BioLinkManager";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,9 @@ const App = () => (
           <Route path="/media-kit" element={<MediaKit />} />
           <Route path="/referral" element={<Referral />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/bio-link" element={<BioLink />} />
+          <Route path="/bio-link-manager" element={<BioLinkManager />} />
+          <Route path="/bio/:username" element={<BioLink />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

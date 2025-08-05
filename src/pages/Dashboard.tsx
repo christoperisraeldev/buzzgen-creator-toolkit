@@ -144,6 +144,46 @@ const Dashboard = () => {
             </Card>
 
             <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Link-in-Bio</h3>
+                  <p className="text-gray-600 text-sm">Manage your bio link page</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch defaultChecked />
+                  <span className="text-sm text-gray-500">Live</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span>Total Views</span>
+                  <span className="font-medium">15,420</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Total Clicks</span>
+                  <span className="font-medium">3,847</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span>Click Rate</span>
+                  <span className="font-medium text-green-600">24.9%</span>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Link to="/bio-link-manager" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      Manage
+                    </Button>
+                  </Link>
+                  <Link to="/bio-link" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      View
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
