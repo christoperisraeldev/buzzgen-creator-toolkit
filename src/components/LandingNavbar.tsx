@@ -44,7 +44,7 @@ const LandingNavbar = () => {
               Log In
             </Link>
             <Button asChild variant="default" className="bg-brand-blue hover:bg-brand-blue/90">
-              <Link to="/auth">Get Started</Link>
+              <Link to="/signup">Get Started</Link>
             </Button>
           </div>
 
@@ -81,7 +81,7 @@ const LandingNavbar = () => {
                 Log In
               </Link>
               <Button asChild variant="default" className="w-full mt-2 bg-brand-blue hover:bg-brand-blue/90">
-                <Link to="/auth" onClick={() => setIsOpen(false)}>Get Started</Link>
+                <Link to="/signup" onClick={() => setIsOpen(false)}>Get Started</Link>
               </Button>
             </div>
           </div>

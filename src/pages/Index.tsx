@@ -40,7 +40,7 @@ const Index = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild size="lg" className="bg-brand-blue hover:bg-brand-blue/90 text-lg px-8">
-                  <Link to="/auth">
+                  <Link to="/signup">
                     Get Started Free
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
@@ -188,7 +188,7 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="bg-white text-gray-900 hover:bg-gray-100 text-lg px-8">
-              <Link to="/auth">Start Free Trial</Link>
+              <Link to="/signup">Start Free Trial</Link>
             </Button>
             <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10 text-lg px-8">
               View Pricing
