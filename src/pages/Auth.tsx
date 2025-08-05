@@ -22,14 +22,14 @@ const Auth = () => {
 
         <Card className="p-6 space-y-4">
           <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
-            <Link to="/onboarding">
+            <Link to="/dashboard">
               <FaGoogle className="w-5 h-5" />
               <span>Continue with Google</span>
             </Link>
           </Button>
 
           <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
-            <Link to="/onboarding">
+            <Link to="/dashboard">
               <FaApple className="w-5 h-5" />
               <span>Continue with Apple</span>
             </Link>
@@ -48,7 +48,7 @@ const Auth = () => {
             <div className="flex space-x-2">
               <Input placeholder="Enter your email" type="email" className="flex-1" />
               <Button className="bg-brand-blue hover:bg-brand-blue/90" asChild>
-                <Link to="/onboarding">
+                <Link to="/dashboard">
                   <Mail className="w-4 h-4" />
                 </Link>
               </Button>
@@ -57,7 +57,7 @@ const Auth = () => {
             <div className="flex space-x-2">
               <Input placeholder="Phone number" type="tel" className="flex-1" />
               <Button className="bg-brand-lime hover:bg-brand-lime/90 text-black" asChild>
-                <Link to="/onboarding">
+                <Link to="/dashboard">
                   <Phone className="w-4 h-4" />
                 </Link>
               </Button>
