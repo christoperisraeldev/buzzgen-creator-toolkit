@@ -6,27 +6,17 @@ import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, ExternalLink, Trash2, Edit3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLinks } from "@/hooks/useLinks";
 
-interface Link {
-  id: string;
-  title: string;
-  url: string;
-  clicks: number;
-}
-
-interface LinkManagerProps {
-  links: Link[];
-  onLinksChange: (links: Link[]) => void;
-}
-
-const LinkManager = ({ links, onLinksChange }: LinkManagerProps) => {
+const LinkManager = () => {
+  const { links, addLink, updateLink, deleteLink, loading } = useLinks();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const [editingLink, setEditingLink] = useState<Link | null>(null);
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !url.trim()) {
       toast({
@@ -37,49 +27,54 @@ const LinkManager = ({ links, onLinksChange }: LinkManagerProps) => {
       return;
     }
 
-    if (editingLink) {
-      // Update existing link
-      const updatedLinks = links.map(link => 
-        link.id === editingLink.id 
-          ? { ...link, title: title.trim(), url: url.trim() }
-          : link
-      );
-      onLinksChange(updatedLinks);
-      toast({
-        title: "Link Updated",
-        description: "Your link has been updated successfully",
+    let result;
+    if (editingLinkId) {
+      result = await updateLink(editingLinkId, {
+        title: title.trim(),
+        url: url.trim()
       });
     } else {
-      // Add new link
-      const newLink: Link = {
-        id: Date.now().toString(),
-        title: title.trim(),
-        url: url.trim(),
-        clicks: 0,
-      };
-      onLinksChange([...links, newLink]);
-      toast({
-        title: "Link Added",
-        description: "Your new link has been added successfully",
-      });
+      result = await addLink(title.trim(), url.trim());
     }
+
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: editingLinkId ? "Link Updated" : "Link Added",
+      description: `Your link has been ${editingLinkId ? 'updated' : 'added'} successfully`,
+    });
 
     setTitle("");
     setUrl("");
-    setEditingLink(null);
+    setEditingLinkId(null);
     setIsOpen(false);
   };
 
-  const handleEdit = (link: Link) => {
-    setEditingLink(link);
+  const handleEdit = (link: any) => {
+    setEditingLinkId(link.id);
     setTitle(link.title);
     setUrl(link.url);
     setIsOpen(true);
   };
 
-  const handleDelete = (linkId: string) => {
-    const updatedLinks = links.filter(link => link.id !== linkId);
-    onLinksChange(updatedLinks);
+  const handleDelete = async (linkId: string) => {
+    const result = await deleteLink(linkId);
+    if (result.error) {
+      toast({
+        title: "Error",
+        description: result.error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
       title: "Link Deleted",
       description: "The link has been removed",
@@ -87,11 +82,15 @@ const LinkManager = ({ links, onLinksChange }: LinkManagerProps) => {
   };
 
   const openEditDialog = () => {
-    setEditingLink(null);
+    setEditingLinkId(null);
     setTitle("");
     setUrl("");
     setIsOpen(true);
   };
+
+  if (loading) {
+    return <div>Loading links...</div>;
+  }
 
   return (
     <div>
@@ -105,7 +104,7 @@ const LinkManager = ({ links, onLinksChange }: LinkManagerProps) => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingLink ? "Edit Link" : "Add New Link"}
+              {editingLinkId ? "Edit Link" : "Add New Link"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -128,7 +127,7 @@ const LinkManager = ({ links, onLinksChange }: LinkManagerProps) => {
               />
             </div>
             <Button type="submit" className="w-full">
-              {editingLink ? "Update Link" : "Add Link"}
+              {editingLinkId ? "Update Link" : "Add Link"}
             </Button>
           </form>
         </DialogContent>

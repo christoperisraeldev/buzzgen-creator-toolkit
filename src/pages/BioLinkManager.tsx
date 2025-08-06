@@ -160,7 +160,7 @@ const BioLinkManager = () => {
                       {links.length} active links
                     </Badge>
                   </div>
-                  <LinkManager links={links} onLinksChange={setLinks} />
+                  <LinkManager />
                 </Card>
 
                 {/* Link Performance */}

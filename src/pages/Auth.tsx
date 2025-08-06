@@ -1,83 +1,140 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
-import { Mail, Phone } from "lucide-react";
-import { FaGoogle, FaApple } from "react-icons/fa";
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/hooks/useAuth';
+import { Navigate } from 'react-router-dom';
 
 const Auth = () => {
+  const { user, signIn, signUp, loading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    const { error } = await signIn(email, password);
+    if (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    const { error } = await signUp(email, password);
+    if (error) {
+      setError(error.message);
+    } else {
+      setError('Check your email for the confirmation link!');
+    }
+    setIsLoading(false);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-accent/5 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center space-x-2 mb-6">
-            <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">B</span>
-            </div>
-            <span className="font-poppins font-bold text-2xl text-gray-900">BUZZGEN</span>
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h1>
-          <p className="text-gray-600">Log in to access your creator dashboard and continue growing your brand.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to BuzzGen</h1>
+          <p className="text-gray-600">Create your AI-powered creator toolkit</p>
         </div>
 
-        <Card className="p-6 space-y-4">
-          <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
-            <Link to="/dashboard">
-              <FaGoogle className="w-5 h-5" />
-              <span>Continue with Google</span>
-            </Link>
-          </Button>
+        {error && (
+          <Alert className="mb-6">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
 
-          <Button variant="outline" className="w-full flex items-center justify-center space-x-2" asChild>
-            <Link to="/dashboard">
-              <FaApple className="w-5 h-5" />
-              <span>Continue with Apple</span>
-            </Link>
-          </Button>
+        <Tabs defaultValue="signin" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="signin">Sign In</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or</span>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex space-x-2">
-              <Input placeholder="Enter your email" type="email" className="flex-1" />
-              <Button className="bg-brand-blue hover:bg-brand-blue/90" asChild>
-                <Link to="/dashboard">
-                  <Mail className="w-4 h-4" />
-                </Link>
+          <TabsContent value="signin">
+            <form onSubmit={handleSignIn} className="space-y-4">
+              <div>
+                <Label htmlFor="signin-email">Email</Label>
+                <Input
+                  id="signin-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="signin-password">Password</Label>
+                <Input
+                  id="signin-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
               </Button>
-            </div>
+            </form>
+          </TabsContent>
 
-            <div className="flex space-x-2">
-              <Input placeholder="Phone number" type="tel" className="flex-1" />
-              <Button className="bg-brand-lime hover:bg-brand-lime/90 text-black" asChild>
-                <Link to="/dashboard">
-                  <Phone className="w-4 h-4" />
-                </Link>
+          <TabsContent value="signup">
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <div>
+                <Label htmlFor="signup-email">Email</Label>
+                <Input
+                  id="signup-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="signup-password">Password</Label>
+                <Input
+                  id="signup-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Signing up...' : 'Sign Up'}
               </Button>
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-500 text-center">
-            By continuing, you agree to our Terms of Service and Privacy Policy.
-          </p>
-
-          <div className="text-center pt-4">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Link to="/signup" className="text-brand-blue hover:underline font-medium">
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </Card>
-      </div>
+            </form>
+          </TabsContent>
+        </Tabs>
+      </Card>
     </div>
   );
 };

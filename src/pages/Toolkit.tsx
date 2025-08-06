@@ -3,102 +3,84 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Wand2, Lightbulb, Hash, Copy } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Toolkit = () => {
-  const userType = localStorage.getItem('userType') || 'creator';
+  const { user, loading: authLoading } = useAuth();
+  const { profile, loading: profileLoading } = useProfile();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("captions");
   const [inputText, setInputText] = useState("");
   const [generatedContent, setGeneratedContent] = useState("");
   const [selectedIdea, setSelectedIdea] = useState("");
   const [generatedIdeas, setGeneratedIdeas] = useState<string[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const mockCaptions = [
-    "Just dropped my latest look! ✨ Who else is obsessed with this color combo? #OOTD #Fashion",
-    "Monday motivation: You're capable of amazing things! 💪 What's one goal you're crushing this week?",
-    "Behind the scenes of today's shoot 📸 The magic happens when you least expect it! #BTS"
-  ];
+  if (authLoading || profileLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
-  const getContentIdeas = (topic: string) => {
-    const ideas = {
-      "fashion": [
-        "Morning style routine that changed my wardrobe",
-        "Rating viral fashion trends on TikTok",
-        "Day in my life as a fashion creator",
-        "My favorite affordable fashion finds under $50",
-        "Styling one piece 5 different ways",
-        "Fashion mistakes I made in my 20s",
-        "Building a capsule wardrobe on a budget",
-        "Thrifting haul and styling tips"
-      ],
-      "beauty": [
-        "My 5-minute morning skincare routine",
-        "Testing viral makeup hacks from TikTok",
-        "Get ready with me for a night out",
-        "Drugstore vs high-end makeup comparison",
-        "My skincare journey and what actually worked",
-        "Makeup mistakes that age you",
-        "Holy grail products that changed my skin",
-        "No-makeup makeup look tutorial"
-      ],
-      "lifestyle": [
-        "My productive morning routine",
-        "Rating productivity apps I use daily",
-        "A realistic day in my life",
-        "Self-care Sunday routine",
-        "Healthy habits that improved my life",
-        "Budget-friendly home organization tips",
-        "Weekend reset routine",
-        "How I stay motivated and focused"
-      ],
-      "fitness": [
-        "15-minute morning workout routine",
-        "What I eat in a day for energy",
-        "Workout gear favorites under $30",
-        "My fitness journey and what I learned",
-        "Quick healthy meal prep ideas",
-        "At-home workout equipment essentials",
-        "Stretching routine for better sleep",
-        "Fitness motivation tips that actually work"
-      ]
-    };
-    
-    return ideas[topic.toLowerCase() as keyof typeof ideas] || ideas.lifestyle;
-  };
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
 
-  const mockHashtags = [
-    "#fashion", "#style", "#ootd", "#trendy", "#chic", "#fashionista", 
-    "#styleinspo", "#outfit", "#fashionblogger", "#instafashion"
-  ];
+  const userType = profile?.user_type || 'creator';
 
-  const generateContent = () => {
-    if (activeTab === "captions") {
-      const randomCaption = mockCaptions[Math.floor(Math.random() * mockCaptions.length)];
-      setGeneratedContent(randomCaption);
-    } else if (activeTab === "ideas") {
-      if (!inputText.trim()) {
-        setGeneratedContent("Please enter a topic to generate content ideas.");
-        return;
+  const generateContent = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-toolkit', {
+        body: {
+          type: activeTab,
+          prompt: activeTab === 'hashtags' ? selectedIdea : inputText,
+          topic: inputText,
+          userType
+        }
+      });
+
+      if (error) throw error;
+
+      if (activeTab === 'ideas') {
+        // Parse the numbered list into an array
+        const ideas = data.generatedContent
+          .split('\n')
+          .filter((line: string) => line.trim() && /^\d+/.test(line.trim()))
+          .map((line: string) => line.replace(/^\d+\.\s*/, '').trim());
+        
+        setGeneratedIdeas(ideas);
+        setGeneratedContent(data.generatedContent);
+      } else {
+        setGeneratedContent(data.generatedContent);
       }
-      const ideas = getContentIdeas(inputText.trim());
-      const randomIdeas = ideas.sort(() => 0.5 - Math.random()).slice(0, 5);
-      setGeneratedIdeas(randomIdeas);
-      setGeneratedContent(randomIdeas.map((idea, index) => `${index + 1}. ${idea}`).join("\n"));
-    } else {
-      if (!selectedIdea) {
-        setGeneratedContent("Please select a content idea first to generate relevant hashtags.");
-        return;
-      }
-      setGeneratedContent(mockHashtags.join(" "));
+    } catch (error) {
+      console.error('Error generating content:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate content. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      // You could add a toast notification here
+      toast({
+        title: "Copied!",
+        description: "Content copied to clipboard",
+      });
     } catch (err) {
       console.error('Failed to copy text: ', err);
     }
@@ -168,9 +150,10 @@ const Toolkit = () => {
                   <Button 
                     onClick={generateContent}
                     className="bg-brand-blue hover:bg-brand-blue/90"
+                    disabled={isGenerating || !inputText.trim()}
                   >
                     <Wand2 className="w-4 h-4 mr-2" />
-                    Generate Caption
+                    {isGenerating ? 'Generating...' : 'Generate Caption'}
                   </Button>
                 </div>
               )}
@@ -187,9 +170,10 @@ const Toolkit = () => {
                   <Button 
                     onClick={generateContent}
                     className="bg-brand-lime hover:bg-brand-lime/90 text-black"
+                    disabled={isGenerating || !inputText.trim()}
                   >
                     <Lightbulb className="w-4 h-4 mr-2" />
-                    Generate Ideas
+                    {isGenerating ? 'Generating...' : 'Generate Ideas'}
                   </Button>
                 </div>
               )}
@@ -220,10 +204,10 @@ const Toolkit = () => {
                   <Button 
                     onClick={generateContent}
                     className="bg-brand-blue hover:bg-brand-blue/90"
-                    disabled={!selectedIdea}
+                    disabled={isGenerating || !selectedIdea}
                   >
                     <Hash className="w-4 h-4 mr-2" />
-                    Generate Hashtags
+                    {isGenerating ? 'Generating...' : 'Generate Hashtags'}
                   </Button>
                 </div>
               )}

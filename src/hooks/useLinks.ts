@@ -134,8 +134,14 @@ export function useLinks() {
     if (!user) return;
 
     try {
-      // Update click count
-      await supabase.rpc('increment_clicks', { link_id: linkId });
+      // Update click count directly
+      const currentLink = links.find(l => l.id === linkId);
+      if (currentLink) {
+        await supabase
+          .from('links')
+          .update({ clicks: currentLink.clicks + 1 })
+          .eq('id', linkId);
+      }
 
       // Track analytics
       await supabase
